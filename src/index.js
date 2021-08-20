@@ -6,13 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 
 import {Company_code_Read} from './company_code'
-import {Collapsible_table,Sorting_selecting} from './test'
+import {Collapsible_table,Sorting_selecting,Sorting_selecting_google} from './test'
 
 ReactDOM.render(
   <Router>
     <Route path="/company_code_read" component={Company_code_Read}/>
     <Route path="/test_Collapsible_table" component={Collapsible_table}/>
     <Route path="/test_Sorting_selecting" component={Sorting_selecting}/>
+    <Route path="/test_Sorting_selecting_google" component={Sorting_selecting_google}/>
   </Router>,
   document.getElementById('root')
 );
