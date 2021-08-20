@@ -5,11 +5,14 @@ import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { Route, BrowserRouter as Router } from 'react-router-dom';
 
-import {Company_code_read} from './company_code'
+import {Company_code_Read} from './company_code'
+import {Collapsible_table,Sorting_selecting} from './test'
 
 ReactDOM.render(
   <Router>
-    <Route path="/company_code_read" component={Company_code_read}/>
+    <Route path="/company_code_read" component={Company_code_Read}/>
+    <Route path="/test_Collapsible_table" component={Collapsible_table}/>
+    <Route path="/test_Sorting_selecting" component={Sorting_selecting}/>
   </Router>,
   document.getElementById('root')
 );

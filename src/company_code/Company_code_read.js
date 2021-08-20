@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { get } from 'axios'
 
 import { makeStyles } from '@material-ui/core/styles';
@@ -7,17 +7,8 @@ import {InputLabel,MenuItem,FormHelperText,FormControl,Select }from '@material-u
 
 import { Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper } from '@material-ui/core';
 
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+import { Company_code_Create } from '.'
 
-const rows = [
-  createData('Frozen yoghurt', 159, 6.0, 24, 4.0),
-  createData('Ice cream sandwich', 237, 9.0, 37, 4.3),
-  createData('Eclair', 262, 16.0, 24, 6.0),
-  createData('Cupcake', 305, 3.7, 67, 4.3),
-  createData('Gingerbread', 356, 16.0, 49, 3.9),
-];
 const useStyles = makeStyles((theme) =>({
   formControl: {
     margin: theme.spacing(1),
@@ -130,14 +121,14 @@ function Company_code_read(){
       </TableHead>
     )
   }
-  
+
   const handleChange = (event) => {
     setAge(event.target.value);
   };
 
   return(
-    <div>
-       <FormControl variant="outlined" className={classes.formControl}>
+    <Fragment>
+      <FormControl variant="outlined" className={classes.formControl}>
         <InputLabel id="demo-simple-select-outlined-label">Age</InputLabel>
         <Select
           labelId="demo-simple-select-outlined-label"
@@ -154,7 +145,7 @@ function Company_code_read(){
           <MenuItem value={30}>Thirty</MenuItem>
         </Select>
       </FormControl>
-    
+      <Company_code_Create />
       <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="simple table">
         {setTableHead()}
@@ -179,7 +170,7 @@ function Company_code_read(){
         </TableBody>
       </Table>
       </TableContainer>
-    </div>
+    </Fragment>
   )
 }
 
