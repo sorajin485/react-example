@@ -73,7 +73,7 @@ function Row(props) {
                     <TableCell></TableCell>
                     <TableCell>code_name</TableCell>
                     <TableCell>code_description</TableCell>
-                    <TableCell >code_value</TableCell>
+                    <TableCell>code_value</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
