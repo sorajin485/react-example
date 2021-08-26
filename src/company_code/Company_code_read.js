@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { get } from 'axios'
 import { makeStyles } from '@material-ui/core/styles'
 import {InputLabel,MenuItem,FormHelperText,FormControl,Select, FormControlLabel }from '@material-ui/core';
-import {RadioGroup,FormGroup,Checkbox,Radio, Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper } from '@material-ui/core';
+import {TableSortLabel,RadioGroup,FormGroup,Checkbox,Radio, Table,TableBody,TableCell,TableContainer,TableHead,TableRow,Paper } from '@material-ui/core';
 import {Collapse,IconButton,Box,Typography} from '@material-ui/core'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -20,6 +20,17 @@ const useStyles = makeStyles((theme) =>({
   table: {
     minWidth: 650,
   },
+  visuallyHidden: {
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+  },
 }));
 const useRowStyles = makeStyles({
   root: {
@@ -28,10 +39,6 @@ const useRowStyles = makeStyles({
     },
   },
 });
-
-
-
-
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -284,13 +291,17 @@ function Company_code_read(){
         />
         <TableBody>
           {location.select ? 
+          stableSort(department.view, getComparator(order, orderBy)).map((row) => (
+            <Row key={row.code_value} departmentTable={row} teamTable={team.table} 
+            isDepSelected={isDepSelected} departmentHandleClick={departmentHandleClick} 
+            isTeamSelected={isTeamSelected} teamHandleClick={teamHandleClick}/>
+          )):""}
+          {/* {location.select ? 
           department.view.map((row) => (
             <Row key={row.code_value} departmentTable={row} teamTable={team.table} 
             isDepSelected={isDepSelected} departmentHandleClick={departmentHandleClick} 
             isTeamSelected={isTeamSelected} teamHandleClick={teamHandleClick}/>
-          )):""
-          // setTableBody(department.view) : ""}
-          }
+          )):""} */}
         </TableBody>
       </Table>
       </TableContainer>
@@ -312,7 +323,6 @@ function Row(props) {
   // const isTeamSelected = isDepSelected(team.code_value)
   return (
     <React.Fragment>
-
       <TableRow className={classes.root} 
         onClick={(event) => departmentHandleClick(event,departmentTable)}
         key={departmentTable.code_value}
@@ -382,7 +392,24 @@ function EnhancedTableHead(props) {
         <TableCell>code_name</TableCell>
         <TableCell>code_sort</TableCell>
         <TableCell>code_value</TableCell>
-        <TableCell>팀</TableCell>
+        <TableCell
+          key='code_sort'
+          sortDirection={orderBy=== 'code_sort' ? order : false}
+        >
+          <TableSortLabel
+           active={orderBy === 'code_sort'}
+           direction={orderBy === 'code_sort' ? order : 'asc'}
+           onClick={createSortHandler('code_sort')}
+          >
+           sort 
+           {orderBy === 'code_sort' ? (
+             <span className={classes.visuallyHidden}>
+               {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
+             </span>
+           ) : null}
+          </TableSortLabel>
+        </TableCell>
+        
         <TableCell></TableCell>
       </TableRow>
     </TableHead>

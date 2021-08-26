@@ -10,7 +10,7 @@ import {Collapsible_table,Sorting_selecting,Sorting_selecting_google} from './te
 
 ReactDOM.render(
   <Router>
-    <Route path="/company_code_read" component={Company_code_Read}/>
+    <Route path="/company_code_Read" component={Company_code_Read}/>
     <Route path="/test_Collapsible_table" component={Collapsible_table}/>
     <Route path="/test_Sorting_selecting" component={Sorting_selecting}/>
     <Route path="/test_Sorting_selecting_google" component={Sorting_selecting_google}/>
