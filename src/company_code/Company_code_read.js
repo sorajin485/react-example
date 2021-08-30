@@ -4,10 +4,10 @@ import CommonStyle from '../style/CommonStyle';
 import { get } from 'axios'
 import { makeStyles } from '@material-ui/core/styles'
 import { TableSortLabel, Radio, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@material-ui/core';
-import { Grid, Collapse, IconButton, Box, Typography } from '@material-ui/core'
+import {Toolbar, Grid, Collapse, IconButton, Box, Typography } from '@material-ui/core'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-
+import clsx from "clsx";
 import { Company_code_Create } from '.'
 
 const useStyles = makeStyles((theme) => ({
@@ -52,8 +52,8 @@ function stableSort(array, comparator) {
   return stabilizedThis.map((el) => el[0]);
 }
 
-function Company_code_read() {
-  const classes = useStyles();
+function Company_code_read(props) {
+  const { classes } = props
   const [company_code, setCompany_code] = useState('')
   const [location, setLocation] = useState({
     table: [],
@@ -71,7 +71,7 @@ function Company_code_read() {
   })
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
-
+  const [selectValue,setSelectValue] = useState(0)
 
   //첫실행시
   useEffect(() => {
@@ -160,6 +160,7 @@ function Company_code_read() {
       ...location,
       ["select"]: _location
     })
+    setSelectValue(1)
     setDepartment({
       ...department,
       ["select"]: { code_value: "" }
@@ -178,6 +179,7 @@ function Company_code_read() {
         ...department,
         ["select"]: newSelected
       })
+      setSelectValue(2)
       setTeam({
         ...team,
         ["select"]: { code_value: "" }
@@ -199,6 +201,7 @@ function Company_code_read() {
           ...team,
           ["select"]: newSelected
         })
+        setSelectValue(3)
       }
     }
     else {
@@ -247,11 +250,27 @@ function Company_code_read() {
       </TableBody>
     )
   }
-
+  const enhancedTableToolbar = () => {
+    return(
+    <Toolbar className={clsx(classes.toolbarRoot, { [classes.highlight]: selectValue > 0 })}>
+      <Typography
+        className={classes.title}
+        color="inherit"
+        variant="subtitle1"
+        component="div"
+      >{selectValue}
+      </Typography>
+    </Toolbar>
+    )
+  }
   return (
     <Fragment>
-      <Company_code_Create></Company_code_Create>
-
+      <Company_code_Create
+        location={location.select}
+        department={department.select}
+        team={team.select}
+      />
+      {enhancedTableToolbar(selectValue)}
       <Grid container spacing={2}>
         {/* toolbar location */}
         <Grid item xs={12} sm={4}>
@@ -298,7 +317,7 @@ function Company_code_read() {
   )
 }
 
-export default CombineWithStyles(useStyles, CommonStyle)(Company_code_read);
+
 
 function Row(props) {
   const { departmentTable, teamTable } = props
@@ -404,3 +423,5 @@ function EnhancedTableHead(props) {
     </TableHead>
   )
 }
+
+export default CombineWithStyles(useStyles, CommonStyle)(Company_code_read);
