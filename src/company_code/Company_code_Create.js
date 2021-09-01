@@ -45,51 +45,61 @@ function Company_code_Create(props){
     code_sort : ''
   })
   
+  const codeValueAI = (table,split) =>{
+    var intval=0
+    var strval="A"
+    var ary = table.sort().map(d=>{
+      return parseInt(d.substring(split))
+    })
+    for(var i=0;ary.length;i++){
+      if(i+1 === ary[i])            
+        continue;
+      else{
+        intval=i+1
+        break
+      }            
+    }
+    if(intval === 0)
+      intval=ary.length+1
+    if(intval < 10)
+    {
+      strval = strval + "0" + intval
+    }
+    else{
+      strval = strval + intval
+    }
+    return strval
+  }
+
   useEffect(()=>{
     if(open ===true){
-      var intval = 0
-      var strval = "A"
+      var result 
       switch(select){
         case 0:
-          var ary = location.table.sort().map(d=>{
-            return parseInt(d.substring(1))
-          })
-          for(var i=0;ary.length;i++){
-            if(i+1 === ary[i])            
-              continue;
-            else{
-              intval=i+1
-              break
-            }            
-          }
-          if(intval === 0)
-            intval=ary.length+1
-          if(intval < 10)
-          {
-            strval = strval + "0" + intval
-          }
-          else{
-            strval = strval + intval
-          }
+          result = codeValueAI(location.table,1)
           setTmp({
             ...tmp,
-            ["code_option"]:'',
-            ["code_value"]: strval,
-            ["code_id"]:"location"
+            "code_option":'',
+            "code_value": result,
+            "code_id":"location"
           })
           break
         case 1:
+          result = codeValueAI(department.view,3)
           setTmp({
             ...tmp,
-            ["code_option"]: location.select.code_value,
-            ["code_id"]:"department"
+            "code_option": location.select.code_value,
+            "code_value": result,
+            "code_id":"department"
           })
           break
         case 2:
+          result = codeValueAI(team.view,5)
           setTmp({
             ...tmp,
-            ["code_option"]: department.select.code_value,
-            ["code_id"]:"team"
+            "code_option": department.select.code_value,
+            "code_value": result,
+            "code_id":"team"
           })
           break
         default:

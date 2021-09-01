@@ -136,8 +136,8 @@ function Company_code_read(props) {
       })
       setDepartment({
         ...department,
-        ["view"]: view,
-        ["select"]: { code_value: "" }
+        "view": view,
+        "select": { code_value: "" }
       })
 
     }
@@ -158,16 +158,16 @@ function Company_code_read(props) {
   const locationHandleClick = (event,_location) =>{
     setLocation({
       ...location,
-      ["select"]: _location
+      "select" : _location
     })
     setSelectValue(1)
     setDepartment({
       ...department,
-      ["select"]: { code_value: "" }
+      "select": { code_value: "" }
     })
     setTeam({
       ...team,
-      ["select"]: { code_value: "" }
+      "select": { code_value: "" }
     })
   }
   const departmentHandleClick = (event, _department) => {
@@ -177,17 +177,17 @@ function Company_code_read(props) {
       newSelected = _department
       setDepartment({
         ...department,
-        ["select"]: newSelected
+        "select": newSelected
       })
       setSelectValue(2)
       setTeam({
         ...team,
-        ["select"]: { code_value: "" }
+        "select": { code_value: "" }
       })
     } else {
       setDepartment({
         ...department,
-        ["select"]: newSelected
+        "select": newSelected
       })
     }
   }
