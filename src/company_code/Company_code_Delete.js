@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Button, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import grey from '@material-ui/core/colors/grey';
-import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 const useStyles = makeStyles((theme) =>({
   formControl: {
     marginTop: theme.spacing(2),
@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) =>({
   }
 }));
 
-function Company_code_Update(props){
+function Company_code_Delete(props){
   const classes = useStyles()
   const {select, location, department, team}= props;
   const [open, setOpen] = useState(false);
@@ -135,13 +135,12 @@ function Company_code_Update(props){
     {console.log("location true false : ",Boolean(location.code_value))}
     {console.log("department true false : ",Boolean(department.code_value))}
     {console.log("team true false : ",Boolean(team.code_value))}
-      <Tooltip title="수정">
-        {select === 0 ? <IconButton disabled aria-label="edit" onClick={handleClickOpen}>
-          <EditIcon fontSize="large"  />
-        </IconButton> : <IconButton aria-label="edit" onClick={handleClickOpen}>
-          <EditIcon fontSize="large"  />
+      <Tooltip title="삭제">
+        {select === 0 ? <IconButton disabled aria-label="delete" onClick={handleClickOpen}>
+          <DeleteIcon fontSize="large"  />
+        </IconButton> : <IconButton aria-label="delete" onClick={handleClickOpen}>
+          <DeleteIcon fontSize="large"  />
         </IconButton> }
-        
       </Tooltip>
       <Dialog classes={{ paper: classes.dialogPaper }} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle className={classes.palette}>{dialogTitle()}</DialogTitle>
@@ -162,4 +161,4 @@ function Company_code_Update(props){
   )
 }
 
-export default Company_code_Update;
+export default Company_code_Delete;

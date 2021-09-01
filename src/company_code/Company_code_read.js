@@ -3,14 +3,14 @@ import CombineWithStyles from '../style/CombineWithStyles';
 import CommonStyle from '../style/CommonStyle';
 import { get } from 'axios'
 import { makeStyles } from '@material-ui/core/styles'
-import { TableSortLabel, Radio, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@material-ui/core';
-import {Toolbar, Grid, Collapse, IconButton, Box, Typography } from '@material-ui/core'
+import { TableSortLabel, Radio, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button } from '@material-ui/core';
+import {Tooltip, Toolbar, Grid, Collapse, IconButton, Box, Typography } from '@material-ui/core'
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 import clsx from "clsx";
-import { Company_code_Create } from '.'
-
-const useStyles = makeStyles((theme) => ({
+import { Company_code_Create,Company_code_Update,Company_code_Delete } from '.'
+import RadioButtonUncheckedIcon from '@material-ui/icons/RadioButtonUnchecked';
+const styles = theme => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
-}));
+});
 const useRowStyles = makeStyles({
   root: {
     '& > *': {
@@ -250,6 +250,16 @@ function Company_code_read(props) {
       </TableBody>
     )
   }
+  const toolbarTitle = () =>{
+    switch(selectValue){
+      case 1:
+        return(<>{location.select.code_name}</>)
+      case 2:
+        return(<>{location.select.code_name} - {department.select.code_name}</>)
+      case 3:
+        return(<>{location.select.code_name} - {department.select.code_name} - {team.select.code_name}</>)
+    }
+  }
   const enhancedTableToolbar = () => {
     return(
     <Toolbar className={clsx(classes.toolbarRoot, { [classes.highlight]: selectValue > 0 })}>
@@ -258,14 +268,49 @@ function Company_code_read(props) {
         color="inherit"
         variant="subtitle1"
         component="div"
-      >{selectValue}
+      >{toolbarTitle()}
       </Typography>
     </Toolbar>
     )
   }
+
+  const radioUnchecked = () => {
+    setSelectValue(0)
+    setLocation({
+      ...location,
+      ["select"]: { code_value: "" }
+    })
+    setDepartment({
+      ...department,
+      ["select"]: { code_value: "" }
+    })
+    setTeam({
+      ...team,
+      ["select"]: { code_value: "" }
+    })
+  }
+
   return (
     <Fragment>
+      <Tooltip title="전체 선택 해제">
+        <IconButton aria-label="radioUnchecked" onClick={radioUnchecked}>
+          <RadioButtonUncheckedIcon fontSize="large"></RadioButtonUncheckedIcon>
+        </IconButton>
+      </Tooltip>
       <Company_code_Create
+        select={selectValue}
+        location={location}
+        department={department}
+        team={team}
+      />
+      <Company_code_Update
+        select={selectValue}
+        location={location.select}
+        department={department.select}
+        team={team.select}
+      />
+      <Company_code_Delete
+        select={selectValue}
         location={location.select}
         department={department.select}
         team={team.select}
@@ -274,7 +319,7 @@ function Company_code_read(props) {
       <Grid container spacing={2}>
         {/* toolbar location */}
         <Grid item xs={12} sm={4}>
-          <Paper className={classes.paper}>
+          {/* <Paper className={classes.paper}> */}
             <TableContainer component={Paper}>
             <Typography variant="h6" gutterBottom component="div">위치</Typography>
               <Table size="small">
@@ -284,7 +329,7 @@ function Company_code_read(props) {
                   {location.table ? setLocationBody(location.table) : ""}
               </Table>
             </TableContainer>
-          </Paper>
+          {/* </Paper> */}
         </Grid>
         <Grid item xs={12} sm={8}>
           <TableContainer component={Paper}>
@@ -424,4 +469,4 @@ function EnhancedTableHead(props) {
   )
 }
 
-export default CombineWithStyles(useStyles, CommonStyle)(Company_code_read);
+export default CombineWithStyles(styles, CommonStyle)(Company_code_read);
