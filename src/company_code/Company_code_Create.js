@@ -45,11 +45,12 @@ function Company_code_Create(props){
     code_sort : ''
   })
   
-  const codeValueAI = (table,split) =>{
+  const codeValueAI = (table,split,defaultVal) =>{
+    var sp = split
     var intval=0
-    var strval="A"
+    var strval=defaultVal
     var ary = table.sort().map(d=>{
-      return parseInt(d.substring(split))
+      return parseInt(d.code_value.substring(split))
     })
     for(var i=0;ary.length;i++){
       if(i+1 === ary[i])            
@@ -76,27 +77,48 @@ function Company_code_Create(props){
       var result 
       switch(select){
         case 0:
-          result = codeValueAI(location.table,1)
+          var defaultVal = 'A'
+          result = codeValueAI(location.table,1,defaultVal)
+          console.log("location 추가.. ")
+          console.log("code_sort : ",location.table.length+1)
+          console.log("code_option : ")
+          console.log("code_value : ",result)
+          console.log("code_id : location")
           setTmp({
             ...tmp,
+            "code_sort": location.table.length+1,
             "code_option":'',
             "code_value": result,
             "code_id":"location"
           })
           break
         case 1:
-          result = codeValueAI(department.view,3)
+          var defaultVal = location.select.code_value
+          result = codeValueAI(department.view,3,defaultVal)
+          console.log("department 추가.. ")
+          console.log("code_sort : ",department.view.length+1)
+          console.log("code_option : ",location.select.code_value)
+          console.log("code_value : ",result)
+          console.log("code_id : department")
           setTmp({
             ...tmp,
+            "code_sort": department.view.length+1,
             "code_option": location.select.code_value,
             "code_value": result,
             "code_id":"department"
           })
           break
         case 2:
-          result = codeValueAI(team.view,5)
+          var defaultVal = department.select.code_value//team.table[department.select.code_value][0].code_value.substring(0,5)
+          result = codeValueAI(team.table[department.select.code_value],5,defaultVal)
+          console.log("team 추가.. ")
+          console.log("code_sort : ",team.table[department.select.code_value].length+1)
+          console.log("code_option : ",department.select.code_value)
+          console.log("code_value : ",result)
+          console.log("code_id : team")
           setTmp({
             ...tmp,
+            "code_sort" : team.table[department.select.code_value].length+1,
             "code_option": department.select.code_value,
             "code_value": result,
             "code_id":"team"
@@ -131,7 +153,14 @@ function Company_code_Create(props){
       alert("모든 칸을 채워주세요.")
     }
     else {
-      addTmp()
+      addTmp().then((res)=>{
+        console.log("addTmp : ",res)
+        //alert(res.data)
+      })
+      .catch(err => {
+        console.log("err : ",err)
+        //alert(err["company-code-resp"])
+      })
       //handleClose()
     }
   }
@@ -139,7 +168,7 @@ function Company_code_Create(props){
   const addTmp = () =>{
     const uri = '/company_code'
     const data = {
-      "company-code" : {
+      "company-code" : [{
         code_value : tmp.code_value,
         code_id : tmp.code_id,
         code_name : tmp.code_name,
@@ -147,9 +176,10 @@ function Company_code_Create(props){
         code_option : tmp.code_option,
         code_sort : tmp.code_sort
       }
+      ]
     }
     console.log("addTmp : ",data)
-    //return post(uri,)
+    return post(uri,data)
   }
 
   const handleClickOpen = () => {
@@ -229,7 +259,6 @@ function Company_code_Create(props){
       ...tmp,
       [e.target.name]: e.target.value
     })
-    console.log("handleValueChange [", e.target.name,"] : ",e.target.value)
   }
   return (
     <>

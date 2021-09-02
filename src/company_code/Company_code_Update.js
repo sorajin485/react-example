@@ -4,14 +4,15 @@ import { Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, T
 import { makeStyles } from '@material-ui/core/styles';
 import grey from '@material-ui/core/colors/grey';
 import EditIcon from '@material-ui/icons/Edit';
+import { patch } from 'axios'
 const useStyles = makeStyles((theme) =>({
   formControl: {
     marginTop: theme.spacing(2),
     minWidth: 195
   },
   dialogPaper: {
-    minHeight: '650px',
-    maxHeight: '650px',
+    minHeight: '450px',
+    maxHeight: '450px',
     minWidth: '550px',
     maxWidth: '550px'
   },
@@ -47,88 +48,118 @@ function Company_code_Update(props){
 
   const handleClose = () => {
     setOpen(false)
+    setTmp({
+      code_value : '',
+      code_id : '',
+      code_name : '',
+      code_description : '',
+      code_option : '',
+      code_sort : ''
+    })
   }
 
-  const setCode_id_option = () => {
-    
-  }
   const handleFormSubmit = () =>{
-
+    if(tmp.code_name ==="" || tmp.code_description ==="")
+    {
+      alert("모든 칸을 채워주세요.")
+    }
+    else {
+      editTmp().then((res)=>{
+        console.log("editTmp : ",res)
+        //alert(res.data)
+      })
+      .catch(err => {
+        console.log("err : ",err)
+        //alert(err["company-code-resp"])
+      })
+      //handleClose()
+    }
   }
   
-
+  const editTmp = () =>{
+    const uri = '/company_code'
+    const data = {
+      "company-code" : [{
+        code_value : tmp.code_value,
+        code_id : tmp.code_id,
+        code_name : tmp.code_name,
+        code_description : tmp.code_description,
+        code_option : tmp.code_option,
+        code_sort : tmp.code_sort
+      }
+      ]
+    }
+    console.log("editTmp : ",data)
+    return patch(uri,data)
+  }
 
   const handleClickOpen = () => {
     setOpen(true)
   }
   
-  const locationTextFideld = () =>{
-    if(select!==0){
-      return(
-        <>
-          <TextField className={classes.textField} value={location.code_name} disabled label="위치"></TextField>
-          <TextField className={classes.textField} value={location.code_description} style={{width:380}}  disabled label="설명"></TextField>
-        </>
-     )
-    }else{
-      return (
-        <>
-          <TextField className={classes.textField} label="위치"/>
-          <TextField className={classes.textField} style={{width:380}} label="설명"/>
-        </>
-      )
+  const TableTextField = () => {
+    switch(select){
+      case 1:
+        return (
+          <>
+            <TextField className={classes.textField} value={location.code_name} disabled label="위치 이름"></TextField>
+            <TextField className={classes.textField} value={location.code_sort} disabled label="순서"></TextField>
+            <TextField className={classes.textField} value={location.code_description} disabled style={{width:380}} label="설명"></TextField>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={location.code_name} name="code_name" value={tmp.code_name} label="위치 이름"></TextField>
+            <TextField className={classes.textField} type="number" onChange={handleValueChange} placeholder={location.code_sort} name="code_sort" value={tmp.code_sort} label="순서"></TextField>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={location.code_description} name="code_description" value={tmp.code_description} style={{width:380}} label="설명"></TextField>
+          </>
+        )
+      case 2:
+        return(
+          <>
+            <TextField className={classes.textField} value={department.code_name} disabled label="부서 이름"/>
+            <TextField className={classes.textField} value={department.code_sort} disabled label="순서"/>
+            <TextField className={classes.textField} value={department.code_description} style={{width:380}} disabled label="설명"/>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={department.code_name} name="code_name" value={tmp.code_name} label="부서 이름"></TextField>
+            <TextField className={classes.textField} type="number" onChange={handleValueChange} placeholder={department.code_sort} name="code_sort" value={tmp.code_sort} label="순서"></TextField>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={department.code_description} name="code_description" value={tmp.code_description} style={{width:380}} label="설명"></TextField>
+          </>
+        )
+      case 3:
+        return(
+          <>
+            <TextField className={classes.textField} value={team.code_name} disabled label="팀"/>
+            <TextField className={classes.textField} value={team.code_sort} disabled label="순서"/>
+            <TextField className={classes.textField} value={team.code_description} style={{width:380}} disabled label="설명"/>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={team.code_name} name="code_name" value={tmp.code_name} label="팀 이름"></TextField>
+            <TextField className={classes.textField} type="number" onChange={handleValueChange} placeholder={team.code_sort} name="code_sort" value={tmp.code_sort} label="순서"></TextField>
+            <TextField className={classes.textField} onChange={handleValueChange} placeholder={team.code_description} name="code_description" value={tmp.code_description} style={{width:380}} label="설명"></TextField>
+          </>
+        )
     }
   }
-  const departmentTextFideld = () => {
-    if(select!==1){
-      return (
-        <>
-          <TextField className={classes.textField} value={department.code_name} disabled label="부서"/>
-          <TextField className={classes.textField} value={department.code_description} style={{width:380}} disabled label="설명"/>
-        </>
-      )
-    }else{
-      return (
-        <>
-          <TextField className={classes.textField} label="부서"/>
-          <TextField className={classes.textField} style={{width:380}} label="설명"/>
-        </>
-      )
-    }
-  }
-  const teamTextFideld = () => {
-    if(select!==2){
-      return (
-        <>
-          <TextField className={classes.textField} value={team.code_name} disabled label="팀"/>
-          <TextField className={classes.textField} value={team.code_description} style={{width:380}} disabled label="설명"/>
-        </>
-      )
-    }else{
-      return (
-        <>
-          <TextField className={classes.textField} label="팀"></TextField>
-          <TextField className={classes.textField} style={{width:380}} label="설명"></TextField>
-        </>
-      )
-    }
+  const editTableTextField = () =>{
+
   }
   const dialogTitle = () =>{
-    if(select === 0 ){
-      return (
-        <>{"위치 수정"}</>
-      )
+
+    switch(select){
+      case 1:
+        return (
+          <>{"위치 수정"}</>
+        )
+      case 2:
+        return (
+          <>{"부서 수정"}</>
+        )
+      case 3:
+        return (
+          <>{"팀 수정"}</>
+        )
     }
-    else if(select === 1 ){
-      return (
-        <>{"부서 수정"}</>
-      )
-    }
-    else if(select === 2 ){
-      return (
-        <>{"팀 수정"}</>
-      )
-    }
+  }
+  const handleValueChange = (e) =>{
+    setTmp({
+      ...tmp,
+      [e.target.name]: e.target.value
+    })
+    console.log("handleValueChange [", e.target.name,"] : ",e.target.value)
   }
   return (
     <>
@@ -146,9 +177,7 @@ function Company_code_Update(props){
       <Dialog classes={{ paper: classes.dialogPaper }} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
         <DialogTitle className={classes.palette}>{dialogTitle()}</DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          {locationTextFideld()}
-          {departmentTextFideld()}
-          {teamTextFideld()}
+          {TableTextField()}
           
         </DialogContent>
         <DialogActions>
