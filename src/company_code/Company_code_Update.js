@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import React, { useState,useEffect } from 'react'
 // import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, FormControl, Select, IconButton, Tooltip } from '@material-ui/core';
-import { Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Button, Tooltip } from '@material-ui/core';
+import { Paper, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, TextField, IconButton, Button, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import grey from '@material-ui/core/colors/grey';
 import EditIcon from '@material-ui/icons/Edit';
 import { patch } from 'axios'
+
 const useStyles = makeStyles((theme) =>({
   formControl: {
     marginTop: theme.spacing(2),
@@ -13,8 +14,8 @@ const useStyles = makeStyles((theme) =>({
   dialogPaper: {
     minHeight: '450px',
     maxHeight: '450px',
-    minWidth: '550px',
-    maxWidth: '550px'
+    minWidth: '470px',
+    maxWidth: '470px'
   },
   palette: {
     color: 'white',
@@ -29,13 +30,18 @@ const useStyles = makeStyles((theme) =>({
   },
   textField : {
     margin : theme.spacing(1)
-  }
+  },
+  palette: {
+    color: 'white',
+    backgroundColor: grey[800],
+  },
 }));
 
 function Company_code_Update(props){
   const classes = useStyles()
-  const {select, location, department, team}= props;
-  const [open, setOpen] = useState(false);
+  const {select, location, department, team, refresh}= props
+  const [open, setOpen] = useState(false)
+  const [alertOpen,setAlertOpen] = useState(false)
   const [tmp, setTmp] = useState({
     code_value : '',
     code_id : '',
@@ -45,6 +51,42 @@ function Company_code_Update(props){
     code_sort : ''
   })
 
+  useEffect(()=>{
+    if(open === true){
+      switch(select){
+        case 1:
+          setTmp({
+            ...tmp,
+            "code_name": location.code_name,
+            "code_description": location.code_description,
+            "code_sort": location.code_sort,
+            "code_value": location.code_value,
+          })
+          break
+        case 2:
+          setTmp({
+            ...tmp,
+            "code_name": department.code_name,
+            "code_description": department.code_description,
+            "code_sort": department.code_sort,
+            "code_value": department.code_value,
+          })
+          break
+        case 3:
+          setTmp({
+            ...tmp,
+            "code_name": team.code_name,
+            "code_description": team.code_description,
+            "code_sort": team.code_sort,
+            "code_value": team.code_value,
+          })
+          break
+        default:
+          break
+      }
+    }
+    
+  },[open])
 
   const handleClose = () => {
     setOpen(false)
@@ -59,45 +101,74 @@ function Company_code_Update(props){
   }
 
   const handleFormSubmit = () =>{
-    if(tmp.code_name ==="" || tmp.code_description ==="")
-    {
-      alert("모든 칸을 채워주세요.")
-    }
-    else {
-      editTmp().then((res)=>{
-        console.log("editTmp : ",res)
-        //alert(res.data)
-      })
-      .catch(err => {
-        console.log("err : ",err)
-        //alert(err["company-code-resp"])
-      })
-      //handleClose()
-    }
+    editTmp().then((res)=>{
+      handleClose()
+      handleAlertClose()
+      refresh()
+    })
+    .catch(err => {
+      console.log("err :",err)
+      alert("해당 수정 실패하였습니다. 다시 시도해주세요.")
+    })
+    
   }
+  
   
   const editTmp = () =>{
     const uri = '/company_code'
     const data = {
-      "company-code" : [{
+      "company-code-update" : {
         code_value : tmp.code_value,
-        code_id : tmp.code_id,
         code_name : tmp.code_name,
         code_description : tmp.code_description,
-        code_option : tmp.code_option,
         code_sort : tmp.code_sort
       }
-      ]
+      
     }
     console.log("editTmp : ",data)
     return patch(uri,data)
   }
 
-  const handleClickOpen = () => {
-    setOpen(true)
+
+
+  const editFormCheck = (table) =>{
+    return(
+    <>
+      <DialogContentText>{table.code_name}{"->"}{tmp.code_name} </DialogContentText>
+      <DialogContentText>{table.code_description}{"->"}{tmp.code_description}</DialogContentText>
+      <DialogContentText>{table.code_sort}{"->"}{tmp.code_sort}</DialogContentText>
+    </>)
   }
-  
-  const TableTextField = () => {
+  const handleClickOpen = () => setOpen(true) 
+  const handleAlertClose = () => setAlertOpen(false)
+
+  const handleAlertOpen = () => {
+    if(tmp.code_name==='')
+      alert("이름은 빈값으로 둘 수 없습니다.")
+    else
+      switch(select){
+        case 1:
+          if(tmp.code_name ===location.code_name && tmp.code_description ===location.code_description && tmp.code_sort===location.code_sort)
+            alert("변경사항이 없습니다.")
+          else
+            setAlertOpen(true)
+          break
+        case 2:
+          if(tmp.code_name ===department.code_name && tmp.code_description ===department.code_description && tmp.code_sort===department.code_sort)
+            alert("변경사항이 없습니다.")
+          else
+            setAlertOpen(true)
+          break
+        case 3:
+          if(tmp.code_name ===team.code_name && tmp.code_description ===team.code_description && tmp.code_sort===team.code_sort)
+            alert("변경사항이 없습니다.")
+          else
+            setAlertOpen(true)
+          break
+      }
+    
+  }
+  const tableTextField = () => {
     switch(select){
       case 1:
         return (
@@ -135,7 +206,20 @@ function Company_code_Update(props){
     }
   }
   const editTableTextField = () =>{
+    var result
+    switch(select){
+      case 1:
+        result = editFormCheck(location)
+        break
+      case 2:
+        result = editFormCheck(department)
+        break
+      case 3:
+        result = editFormCheck(team)
+        break
 
+    }
+    return result
   }
   const dialogTitle = () =>{
 
@@ -159,13 +243,10 @@ function Company_code_Update(props){
       ...tmp,
       [e.target.name]: e.target.value
     })
-    console.log("handleValueChange [", e.target.name,"] : ",e.target.value)
   }
+  
   return (
     <>
-    {console.log("location true false : ",Boolean(location.code_value))}
-    {console.log("department true false : ",Boolean(department.code_value))}
-    {console.log("team true false : ",Boolean(team.code_value))}
       <Tooltip title="수정">
         {select === 0 ? <IconButton disabled aria-label="edit" onClick={handleClickOpen}>
           <EditIcon fontSize="large"  />
@@ -174,18 +255,27 @@ function Company_code_Update(props){
         </IconButton> }
         
       </Tooltip>
-      <Dialog classes={{ paper: classes.dialogPaper }} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open}>
+      <Dialog classes={{ paper: classes.dialogPaper }} onClose={handleClose} aria-labelledby="simple-dialog-title" open={open} disableBackdropClick>
         <DialogTitle className={classes.palette}>{dialogTitle()}</DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          {TableTextField()}
-          
+          {tableTextField()}
         </DialogContent>
         <DialogActions>
             {/* <Button variant="contained" className={classes.palette} onClick={this.handleFormSubmit}>확인</Button>
             <Button variant="outlined" onClick={this.handleClose}>취소</Button> */}
-            <Button variant="contained" className={classes.palette} onClick={handleFormSubmit}>확인</Button>
+            <Button variant="contained" className={classes.palette} onClick={handleAlertOpen}>확인</Button>
             <Button variant="outlined" onClick={handleClose}>취소</Button>
         </DialogActions>
+      </Dialog>
+      <Dialog open={alertOpen} onClose={handleAlertClose} disableBackdropClick >
+          <DialogTitle>수정 확인</DialogTitle>
+          <DialogContent>
+            {editTableTextField()}
+            입력한 값으로 수정하시겠습니까?</DialogContent>
+          <DialogActions>
+            <Button variant="contained" className={classes.palette} onClick={handleFormSubmit}>수정</Button>
+            <Button variant="outlined" onClick={handleAlertClose}>취소</Button>
+          </DialogActions>
       </Dialog>
     </>
   )

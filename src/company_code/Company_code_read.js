@@ -72,7 +72,10 @@ function Company_code_read(props) {
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('calories');
   const [selectValue,setSelectValue] = useState(0)
-
+  const [refresh,setRefresh] = useState(false)
+  const componentRefresh = () =>{
+    setRefresh(!refresh)
+  }
   //첫실행시
   useEffect(() => {
     getCompany_code().then((response) => {
@@ -83,7 +86,7 @@ function Company_code_read(props) {
     return () => {
       console.log("end")
     }
-  }, [])
+  }, [refresh])
 
   useEffect(() => {
     if (company_code !== "") {
@@ -104,11 +107,15 @@ function Company_code_read(props) {
       })
       setLocation({
         ...location,
-        "table" : loc
+        "table" : loc,
+        "view" : [],
+        "select" : {code_value: ""}
       })
       setDepartment({
         ...department,
-        "table" : dep
+        "table" : dep,
+        "view" : [],
+        "select" : {code_value: ""}
       })
       dep.forEach(x => {
         data[x.code_value] = []
@@ -120,8 +127,11 @@ function Company_code_read(props) {
       })
       setTeam({
         ...team,
-        "table" : data
+        "table" : data,
+        "view" : [],
+        "select" : {code_value: ""}
       })
+      setSelectValue(0)
     }
   }, [company_code])
 
@@ -175,22 +185,19 @@ function Company_code_read(props) {
 
     if (_department.code_value !== department.select.code_value) {
       newSelected = _department
-      setDepartment({
-        ...department,
-        "select": newSelected
-      })
-      setSelectValue(2)
-      setTeam({
-        ...team,
-        "select": { code_value: "" }
-      })
-    } else {
-      setDepartment({
-        ...department,
-        "select": newSelected
-      })
+
     }
+    setDepartment({
+      ...department,
+      "select": newSelected
+    })
+    setSelectValue(2)
+    setTeam({
+      ...team,
+      "select": { code_value: "" }
+    })
   }
+
   const teamHandleClick = (event, _team) => {
     let newSelected = team.select
 
@@ -224,8 +231,8 @@ function Company_code_read(props) {
     return (
       <TableRow>
         <TableCell></TableCell>
-        <TableCell>code_name</TableCell>
-        <TableCell>code_value</TableCell>
+        <TableCell>이름</TableCell>
+        <TableCell>설명</TableCell>
       </TableRow>
     )
   }
@@ -244,7 +251,7 @@ function Company_code_read(props) {
                 checked={isLocationSelected(d)}
               /></TableCell>
             <TableCell>{d.code_name}</TableCell>
-            <TableCell>{d.code_value}</TableCell>
+            <TableCell>{d.code_description}</TableCell>
           </TableRow>
         )})}
       </TableBody>
@@ -302,18 +309,21 @@ function Company_code_read(props) {
         location={location}
         department={department}
         team={team}
+        refresh={componentRefresh}
       />
       <Company_code_Update
         select={selectValue}
         location={location.select}
         department={department.select}
         team={team.select}
+        refresh={componentRefresh}
       />
       <Company_code_Delete
         select={selectValue}
-        location={location.select}
-        department={department.select}
-        team={team.select}
+        location={location}
+        department={department}
+        team={team}
+        refresh={componentRefresh}
       />
       {enhancedTableToolbar(selectValue)}
       <Grid container spacing={2}>
@@ -369,11 +379,7 @@ function Row(props) {
   const { isDepSelected, isTeamSelected, departmentHandleClick, teamHandleClick } = props
   const [open, setOpen] = React.useState(false)
   const classes = useRowStyles()
-  console.log("row : ", departmentTable)
-  console.log("team : ", teamTable)
 
-  // const isDepartmentSelected = isDepSelected(departmentTable.code_value)
-  // const isTeamSelected = isDepSelected(team.code_value)
   return (
     <React.Fragment>
       <TableRow className={classes.root}

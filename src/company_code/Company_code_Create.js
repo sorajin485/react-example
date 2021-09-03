@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
-// import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button, MenuItem, FormControl, Select, IconButton, Tooltip } from '@material-ui/core';
-import { Paper, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Button, Tooltip } from '@material-ui/core';
+import { Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, Button, Tooltip } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { post } from 'axios'
 import grey from '@material-ui/core/colors/grey';
@@ -34,7 +33,7 @@ const useStyles = makeStyles((theme) =>({
 
 function Company_code_Create(props){
   const classes = useStyles()
-  const {select, location, department, team}= props;
+  const {select, location, department, team, refresh}= props;
   const [open, setOpen] = useState(false);
   const [tmp, setTmp] = useState({
     code_value : '',
@@ -46,7 +45,6 @@ function Company_code_Create(props){
   })
   
   const codeValueAI = (table,split,defaultVal) =>{
-    var sp = split
     var intval=0
     var strval=defaultVal
     var ary = table.sort().map(d=>{
@@ -75,15 +73,11 @@ function Company_code_Create(props){
   useEffect(()=>{
     if(open ===true){
       var result 
+      var defaultVal
       switch(select){
         case 0:
-          var defaultVal = 'A'
+          defaultVal = 'A'
           result = codeValueAI(location.table,1,defaultVal)
-          console.log("location 추가.. ")
-          console.log("code_sort : ",location.table.length+1)
-          console.log("code_option : ")
-          console.log("code_value : ",result)
-          console.log("code_id : location")
           setTmp({
             ...tmp,
             "code_sort": location.table.length+1,
@@ -93,13 +87,8 @@ function Company_code_Create(props){
           })
           break
         case 1:
-          var defaultVal = location.select.code_value
+          defaultVal = location.select.code_value
           result = codeValueAI(department.view,3,defaultVal)
-          console.log("department 추가.. ")
-          console.log("code_sort : ",department.view.length+1)
-          console.log("code_option : ",location.select.code_value)
-          console.log("code_value : ",result)
-          console.log("code_id : department")
           setTmp({
             ...tmp,
             "code_sort": department.view.length+1,
@@ -109,13 +98,8 @@ function Company_code_Create(props){
           })
           break
         case 2:
-          var defaultVal = department.select.code_value//team.table[department.select.code_value][0].code_value.substring(0,5)
+          defaultVal = department.select.code_value//team.table[department.select.code_value][0].code_value.substring(0,5)
           result = codeValueAI(team.table[department.select.code_value],5,defaultVal)
-          console.log("team 추가.. ")
-          console.log("code_sort : ",team.table[department.select.code_value].length+1)
-          console.log("code_option : ",department.select.code_value)
-          console.log("code_value : ",result)
-          console.log("code_id : team")
           setTmp({
             ...tmp,
             "code_sort" : team.table[department.select.code_value].length+1,
@@ -128,7 +112,6 @@ function Company_code_Create(props){
           break
       }
     }
-    
   },[open])
 
 
@@ -141,12 +124,9 @@ function Company_code_Create(props){
       code_description : '',
       code_option : '',
       code_sort : ''
-    })
+    })    
   }
-  
-  const setCode_id_option = () => {
-    
-  }
+
   const handleFormSubmit = () =>{
     if(tmp.code_name ==="" || tmp.code_description ==="")
     {
@@ -154,21 +134,19 @@ function Company_code_Create(props){
     }
     else {
       addTmp().then((res)=>{
-        console.log("addTmp : ",res)
-        //alert(res.data)
+        refresh()
+        handleClose()  
       })
       .catch(err => {
-        console.log("err : ",err)
-        //alert(err["company-code-resp"])
-      })
-      //handleClose()
+        alert("해당 등록을 실패하였습니다. 다시 시도해주세요")
+      }) 
     }
   }
   
   const addTmp = () =>{
     const uri = '/company_code'
     const data = {
-      "company-code" : [{
+      "company-code-create" : [{
         code_value : tmp.code_value,
         code_id : tmp.code_id,
         code_name : tmp.code_name,
@@ -178,7 +156,6 @@ function Company_code_Create(props){
       }
       ]
     }
-    console.log("addTmp : ",data)
     return post(uri,data)
   }
 
@@ -277,7 +254,7 @@ function Company_code_Create(props){
           {teamTextFideld()}
         </DialogContent>
         <DialogActions>
-            <Button variant="contained" className={classes.palette} onClick={handleFormSubmit}>확인</Button>
+            <Button variant="contained" className={classes.palette} onClick={handleFormSubmit}>추가</Button>
             <Button variant="outlined" onClick={handleClose}>취소</Button>
         </DialogActions>
       </Dialog>
